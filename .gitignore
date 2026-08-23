@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+
+# Audio produced while the bots run — regenerated on every session
+dataset/ogg/*
+dataset/wav/*
+dataset/splitted/*
+inference/*.ogg
+inference/*.wav
+
+.env
+.DS_Store

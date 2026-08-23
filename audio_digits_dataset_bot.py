@@ -7,7 +7,9 @@ import time
 from datetime import datetime # generate log
 
 users_tasks = dict()
-bot = telebot.TeleBot("1046488785:AAHulCd8D94C6rt5YORM7aJ1ozdIyKvS8mw")
+# Get a token from @BotFather and put it in the environment:
+#     export TG_DATASET_BOT_TOKEN="your token"
+bot = telebot.TeleBot(os.environ.get("TG_DATASET_BOT_TOKEN", "YOUR TOKEN HERE"))
 root = os.getcwd() + "/dataset"
 
 

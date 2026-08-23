@@ -11,7 +11,9 @@ from split_by_vad import sec2samples, get_segments_energy, get_vad_mask, mask_co
 
 import pickle
 # @audio_digits_dataset_bot
-bot = telebot.TeleBot("1287460275:AAGgBZQPXDYc3fySV8TYa0jpyMajvM9wkik")
+# Get a token from @BotFather and put it in the environment:
+#     export TG_RECOGNITION_BOT_TOKEN="your token"
+bot = telebot.TeleBot(os.environ.get("TG_RECOGNITION_BOT_TOKEN", "YOUR TOKEN HERE"))
 root = os.getcwd() + "/inference"
 filename = "model.pkl"
 with open(filename, 'rb') as f:
