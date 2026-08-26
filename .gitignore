@@ -5,8 +5,9 @@ __pycache__/
 dataset/ogg/*
 dataset/wav/*
 dataset/splitted/*
-inference/*.ogg
-inference/*.wav
+inference/ogg/
+inference/wav/
+inference/splitted/
 
 .env
 .DS_Store
