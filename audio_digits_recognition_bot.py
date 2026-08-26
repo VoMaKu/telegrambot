@@ -92,7 +92,7 @@ def get_text_messages(message):
     log(f"User ({user}): {text}")
 
     bot.send_message(user,
-        f"Пожалуйста отправьте голосовое сообщение с цифрой.")
+        "Please send a voice message with a digit.")
 
 
 @bot.message_handler(content_types=['voice'])
@@ -110,7 +110,7 @@ def get_voice_messages(message):
 	convert_ogg_wav(ogg_path, wav_path)
 	wav_path_after_vad = vad(wav_path, user)
 	answer = predict(wav_path_after_vad, user)
-	bot.send_message(user, "Вы сказали " + str(answer))
+	bot.send_message(user, "You said " + str(answer))
 
 
 while True:

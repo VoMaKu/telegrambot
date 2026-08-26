@@ -48,7 +48,7 @@ def get_text_messages(message):
 
     users_tasks[user] = generate_task()
     bot.send_message(user,
-        f"Пожалуйста назовите следующие 5 цифры с паузами:\n{users_tasks[user]}")
+        f"Please say the following 5 digits, with a pause between each:\n{users_tasks[user]}")
 
 
 @bot.message_handler(content_types=['voice'])
@@ -66,7 +66,7 @@ def get_voice_messages(message):
     wav_path = root + "/wav/" + file_name + ".wav"
     save_ogg(ogg_data, ogg_path)
     convert_ogg_wav(ogg_path, wav_path)
-    bot.send_message(user, "Спасибо")
+    bot.send_message(user, "Thank you")
 
 
 while True:
