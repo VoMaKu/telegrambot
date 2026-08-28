@@ -15,6 +15,9 @@ import pickle
 #     export TG_RECOGNITION_BOT_TOKEN="your token"
 bot = telebot.TeleBot(os.environ.get("TG_RECOGNITION_BOT_TOKEN", "YOUR TOKEN HERE"))
 root = os.getcwd() + "/inference"
+# Git does not store empty directories, so a fresh clone has none of these.
+for folder in ("ogg", "wav", "splitted"):
+	os.makedirs(root + "/" + folder, exist_ok=True)
 filename = "model.pkl"
 with open(filename, 'rb') as f:
 	model_pickled = f.read()

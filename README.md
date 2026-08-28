@@ -66,6 +66,15 @@ make bot_recognition
 
 Send a voice message with one digit and the bot replies with its prediction.
 
+## Recognising one file without Telegram
+
+`inference.py` runs the same model over a single `.wav` that has already been
+cut down to one digit:
+
+```sh
+python3 inference.py inference/splitted/unk.wav
+```
+
 ## Repository layout
 
 ```

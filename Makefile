@@ -6,7 +6,7 @@ vad_sort:
 	{ \
 	for folder in 0 1 2 3 4 5 6 7 8 9; \
 	do \
-		mkdir dataset/splitted/$$folder; \
+		mkdir -p dataset/splitted/$$folder; \
 	done \
 	}
 	{ \
@@ -16,9 +16,9 @@ vad_sort:
 	done \
 	} 
 splitted:
-	cp dataset/splitted/* dataset/splitted_final/ -r 
-	rm dataset/splitted/*/*
-	rm dataset/wav/* 
-	rm dataset/ogg/* 
+	cp -r dataset/splitted/* dataset/splitted_final/
+	rm -f dataset/splitted/*/*
+	rm -f dataset/wav/*
+	rm -f dataset/ogg/*
 training:
 	python3 training.py

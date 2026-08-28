@@ -11,6 +11,9 @@ users_tasks = dict()
 #     export TG_DATASET_BOT_TOKEN="your token"
 bot = telebot.TeleBot(os.environ.get("TG_DATASET_BOT_TOKEN", "YOUR TOKEN HERE"))
 root = os.getcwd() + "/dataset"
+# Git does not store empty directories, so a fresh clone has none of these.
+for folder in ("ogg", "wav"):
+    os.makedirs(root + "/" + folder, exist_ok=True)
 
 
 def save_ogg(ogg_data, ogg_path):
@@ -55,9 +58,11 @@ def get_text_messages(message):
 def get_voice_messages(message):
     user = message.from_user.id
     voice = message.voice
-    if user not in users_tasks:
-        bot.send_message(user, "/start")
     log(f"User ({user}): voice")
+    # Without a task there is no digit sequence to name the recording after.
+    if user not in users_tasks:
+        bot.send_message(user, "Send me any message first and I will give you five digits to say.")
+        return
 
     tele_file = bot.get_file(voice.file_id)
     ogg_data = bot.download_file(tele_file.file_path)
