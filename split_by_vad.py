@@ -1,4 +1,5 @@
 import numpy as np
+import os           #basename
 import sys          #argv
 from scipy.io.wavfile import read, write
 
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     print_with_timeline(vad_mask, segment_duration, "sec", 10)
     print_segments(segments, segment_duration, "sec")
 
-    fname = wav_file_path[-13:-4]
+    fname = os.path.splitext(os.path.basename(wav_file_path))[0]
     digits = fname.split("_")
     print(digits)
     assert len(digits) == len(segments), "Bad threshold"

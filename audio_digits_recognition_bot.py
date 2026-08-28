@@ -24,6 +24,10 @@ with open(filename, 'rb') as f:
 model = pickle.loads(model_pickled)
 
 
+class BadRecording(Exception):
+	"""Raised when the voice message does not hold exactly one clear digit."""
+
+
 def save_ogg(ogg_data, ogg_path):
 	with open(ogg_path, "wb") as file:
 		file.write(ogg_data)
@@ -36,7 +40,7 @@ def convert_ogg_wav(ogg_path, dst_path):
 	with subprocess.Popen(cmd.split()) as p:
 		try:
 			p.wait(timeout=2)
-		except:
+		except subprocess.TimeoutExpired:
 			p.kill()
 			p.wait()
 			return "timeout"
@@ -55,7 +59,8 @@ def vad(wav_file_path, user):
 	segments_energy = get_segments_energy(audio, segment_duration_samples)
 	vad_mask = get_vad_mask(segments_energy, vad_threshold)
 	segments = mask_compress(vad_mask)
-	assert 1 == len(segments), "Bad threshold"
+	if len(segments) != 1:
+		raise BadRecording(f"I heard {len(segments)} sounds instead of one digit. Please record a single digit in a quiet room.")
 
 	max_duration = 0
 	min_duration = 1
@@ -65,8 +70,10 @@ def vad(wav_file_path, user):
 			max_duration = duration
 		if duration < min_duration:
 			min_duration = duration
-	assert max_duration <= 0.8, f"max_duration={max_duration:.3f}"
-	assert min_duration >= 0.1, f"min_duration={min_duration:.3f}"
+	if max_duration > 0.8:
+		raise BadRecording("That sounded too long for a single digit. Please try again.")
+	if min_duration < 0.1:
+		raise BadRecording("That sounded too short for a single digit. Please try again.")
 	wav_path_after_vad = root + f"/splitted/unk_{user}.wav"
 	start = segment.start * segment_duration_samples
 	stop = segment.stop * segment_duration_samples
@@ -81,7 +88,7 @@ def predict(wav_path_after_vad, user):
 	max_duration = int(max_duration_sec * sample_rate + 1e-6)
 	if len(audio) < max_duration:
 		audio = np.pad(audio, (0, max_duration - len(audio)), constant_values=0)
-	feature = librosa.feature.melspectrogram(audio.astype(float), sample_rate, n_mels=32, fmax=4096)
+	feature = librosa.feature.melspectrogram(y=audio.astype(float), sr=sample_rate, n_mels=32, fmax=4096)
 	features_flatten = feature.reshape(-1)
 
 	answer = model.predict([features_flatten])[0]
@@ -110,16 +117,22 @@ def get_voice_messages(message):
 	ogg_path = root + "/ogg/" + file_name + ".ogg"
 	wav_path = root + "/wav/" + file_name + ".wav"
 	save_ogg(ogg_data, ogg_path)
-	convert_ogg_wav(ogg_path, wav_path)
-	wav_path_after_vad = vad(wav_path, user)
-	answer = predict(wav_path_after_vad, user)
+	if convert_ogg_wav(ogg_path, wav_path) == "timeout":
+		bot.send_message(user, "Converting your recording took too long. Please try again.")
+		return
+	try:
+		wav_path_after_vad = vad(wav_path, user)
+		answer = predict(wav_path_after_vad, user)
+	except BadRecording as e:
+		bot.send_message(user, str(e))
+		return
 	bot.send_message(user, "You said " + str(answer))
 
 
 while True:
 	try:
 		bot.polling(none_stop=True, interval=0)
-	except KeyboardInterrupt as e:
+	except KeyboardInterrupt:
 		exit(0)
 	except Exception as e:
 		print(e)

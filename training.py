@@ -1,5 +1,4 @@
 from scipy.io.wavfile import read
-from IPython.display import Audio, display
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
@@ -35,13 +34,16 @@ features_flatten = []
 for audio in audios:
     if len(audio) < max_duration:
         audio = np.pad(audio, (0, max_duration - len(audio)), constant_values=0)
-    feature = librosa.feature.melspectrogram(audio.astype(float), sample_rate, n_mels=32, fmax=4096)
+    feature = librosa.feature.melspectrogram(y=audio.astype(float), sr=sample_rate, n_mels=32, fmax=4096)
     features.append(feature)
     features_flatten.append(feature.reshape(-1))
 
 #print([feature.shape for feature in features])
 
 def plot(idx):
+    """Show the waveform and the mel-spectrogram of one sample (notebook only)."""
+    from IPython.display import Audio, display
+
     plt.figure(figsize=(20, 5))
 
     plt.subplot(1, 2, 1)

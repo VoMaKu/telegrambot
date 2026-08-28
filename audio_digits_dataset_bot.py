@@ -28,7 +28,7 @@ def convert_ogg_wav(ogg_path, dst_path):
     with subprocess.Popen(cmd.split()) as p:
         try:
             p.wait(timeout=2)
-        except:
+        except subprocess.TimeoutExpired:
             p.kill()
             p.wait()
             return "timeout"
@@ -70,14 +70,16 @@ def get_voice_messages(message):
     ogg_path = root + "/ogg/" + file_name + ".ogg"
     wav_path = root + "/wav/" + file_name + ".wav"
     save_ogg(ogg_data, ogg_path)
-    convert_ogg_wav(ogg_path, wav_path)
+    if convert_ogg_wav(ogg_path, wav_path) == "timeout":
+        bot.send_message(user, "Converting your recording took too long. Please try again.")
+        return
     bot.send_message(user, "Thank you")
 
 
 while True:
     try:
         bot.polling(none_stop=True, interval=0)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         exit(0)
     except Exception as e:
         print(e)
