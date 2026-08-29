@@ -1,3 +1,4 @@
+import os
 import pickle
 import sys
 
@@ -10,6 +11,11 @@ from scipy.io.wavfile import read
 MAX_DURATION_SEC = 0.8
 N_MELS = 32
 FMAX = 4096
+# Both bots convert every voice message to this rate before anything else, so the
+# model has only ever seen 48 kHz audio. The number of mel frames -- and with it
+# the length of the feature vector -- follows from the rate, so a file recorded at
+# any other rate produces a vector the model cannot accept.
+SAMPLE_RATE = 48000
 
 
 def extract_features(audio, sample_rate):
@@ -36,6 +42,9 @@ def extract_features(audio, sample_rate):
 
 def load_model(filename="model.pkl"):
     """Unpickle the classifier trained by training.py."""
+    if not os.path.exists(filename):
+        print(f"{filename} not found. Run 'make training' to build it from dataset/splitted_final.")
+        exit(1)
     with open(filename, "rb") as f:
         return pickle.loads(f.read())
 
@@ -48,6 +57,10 @@ if __name__ == "__main__":
 
     wav_file_path = sys.argv[1]
     sample_rate, audio = read(wav_file_path)
+    if sample_rate != SAMPLE_RATE:
+        print(f"{wav_file_path}: expected {SAMPLE_RATE} Hz, got {sample_rate} Hz.")
+        print(f"Convert it first: ffmpeg -i {wav_file_path} -ar {SAMPLE_RATE} -ac 1 out.wav")
+        exit(1)
 
     model = load_model()
     answer = model.predict([extract_features(audio, sample_rate)])[0]

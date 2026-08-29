@@ -19,6 +19,10 @@ root = os.getcwd() + "/inference"
 for folder in ("ogg", "wav", "splitted"):
 	os.makedirs(root + "/" + folder, exist_ok=True)
 filename = "model.pkl"
+if not os.path.exists(filename):
+	# The model is not kept in the repository, it is trained from the dataset.
+	print(f"{filename} not found. Run 'make training' to build it from dataset/splitted_final.")
+	exit(1)
 with open(filename, 'rb') as f:
 	model_pickled = f.read()
 model = pickle.loads(model_pickled)

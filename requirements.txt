@@ -1,0 +1,6 @@
+# Both bots also need ffmpeg on the PATH; it is not a Python package.
+pyTelegramBotAPI
+numpy
+scipy
+scikit-learn
+librosa

@@ -9,5 +9,9 @@ inference/ogg/
 inference/wav/
 inference/splitted/
 
+# Trained by 'make training' from dataset/splitted_final -- not shipped, because
+# it weighs 77 MB and every clone would pay for it.
+model.pkl
+
 .env
 .DS_Store

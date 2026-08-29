@@ -7,6 +7,9 @@ import time
 from datetime import datetime # generate log
 
 users_tasks = dict()
+# How many digits one recording holds. split_by_vad.py reads it back from the
+# file name, so changing it here is enough for the whole pipeline.
+DIGITS_PER_TASK = 5
 # Get a token from @BotFather and put it in the environment:
 #     export TG_DATASET_BOT_TOKEN="your token"
 bot = telebot.TeleBot(os.environ.get("TG_DATASET_BOT_TOKEN", "YOUR TOKEN HERE"))
@@ -35,7 +38,7 @@ def convert_ogg_wav(ogg_path, dst_path):
 
 
 def generate_task():
-    return ' '.join(list(map(str, np.random.randint(10, size=5))))
+    return ' '.join(list(map(str, np.random.randint(10, size=DIGITS_PER_TASK))))
 
 
 def log(text):
@@ -51,7 +54,8 @@ def get_text_messages(message):
 
     users_tasks[user] = generate_task()
     bot.send_message(user,
-        f"Please say the following 5 digits, with a pause between each:\n{users_tasks[user]}")
+        f"Please say the following {DIGITS_PER_TASK} digits, with a pause between each:"
+        f"\n{users_tasks[user]}")
 
 
 @bot.message_handler(content_types=['voice'])
@@ -61,7 +65,8 @@ def get_voice_messages(message):
     log(f"User ({user}): voice")
     # Without a task there is no digit sequence to name the recording after.
     if user not in users_tasks:
-        bot.send_message(user, "Send me any message first and I will give you five digits to say.")
+        bot.send_message(user,
+            f"Send me any message first and I will give you {DIGITS_PER_TASK} digits to say.")
         return
 
     tele_file = bot.get_file(voice.file_id)

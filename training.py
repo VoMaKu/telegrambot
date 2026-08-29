@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 
-import matplotlib.pyplot as plt
 import numpy as np
 import librosa
 import os
@@ -42,6 +41,7 @@ for audio in audios:
 
 def plot(idx):
     """Show the waveform and the mel-spectrogram of one sample (notebook only)."""
+    import matplotlib.pyplot as plt
     from IPython.display import Audio, display
 
     plt.figure(figsize=(20, 5))
